@@ -24,7 +24,7 @@
     if (self){
         NSError *error;
         _videoURL = [NSURL fileURLWithPath:[self createVideoFilePath]];
-        _assetWriter = [AVAssetWriter assetWriterWithURL:_videoURL fileType:AVFileTypeMPEG4 error:&error];
+        _assetWriter = [AVAssetWriter assetWriterWithURL:_videoURL fileType:AVFileTypeQuickTimeMovie error:&error];
         if (error){
             NSLog(@"AVAssetWriter alloc failed");
             return nil;
@@ -54,21 +54,25 @@
         width = kScreenHeight;
         height = kScreenWidth;
         //视频属性
-      NSDictionary *videoCompressionSettings = @{ AVVideoCodecKey : AVVideoCodecH264,
+        NSDictionary *videoCompressionSettings = @{ AVVideoCodecKey : AVVideoCodecH264,
                                                     AVVideoWidthKey : @(width * 2),
                                                     AVVideoHeightKey : @(height * 2),
                                                     AVVideoScalingModeKey : AVVideoScalingModeResizeAspectFill,
                                                     AVVideoCompressionPropertiesKey : compressionProperties };
-    */
+        _assetWriterVideoInput = [AVAssetWriterInput assetWriterInputWithMediaType:AVMediaTypeVideo outputSettings:videoCompressionSettings];
+
+        */
         
         
         
+     //   NSDictionary *videoCompressionSettings = @{ AVVideoCodecKey : AVVideoCodecH264};
+        _assetWriterVideoInput = [AVAssetWriterInput assetWriterInputWithMediaType:AVMediaTypeVideo outputSettings:nil];
         
-        NSDictionary *videoCompressionSettings = @{ AVVideoCodecKey : AVVideoCodecH264};
-        _assetWriterVideoInput = [AVAssetWriterInput assetWriterInputWithMediaType:AVMediaTypeVideo outputSettings:videoCompressionSettings sourceFormatHint:CMSampleBufferGetFormatDescription(sampleBuffer)];
+        
+        
         //expectsMediaDataInRealTime 必须设为yes，需要从capture session 实时获取数据
         _assetWriterVideoInput.expectsMediaDataInRealTime = YES;
-        
+        _assetWriterVideoInput.transform = CGAffineTransformMakeRotation(0);
         if ([_assetWriter canAddInput:_assetWriterVideoInput]){
             [_assetWriter addInput:_assetWriterVideoInput];
         }
@@ -84,7 +88,9 @@
         }
     }
 }
-
+- (void) stop{
+    
+}
 - (NSString *)createVideoFilePath
 {
     // 创建视频文件的存储路径

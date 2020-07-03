@@ -11,7 +11,7 @@
 #import <AVFoundation/AVFoundation.h>
 @protocol CaptureSessionDelegate <NSObject>
 - (void) processVideoSampleBuffer:(CMSampleBufferRef) sampleBuffer;
-
+- (void) stop;
 @end
 
 @interface VideoCapture : NSObject

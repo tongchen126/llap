@@ -93,7 +93,7 @@
             [_captureSession addInput:_videoInput];
         }
         _videoDataOutput = [[AVCaptureVideoDataOutput alloc] init];
-        [_videoDataOutput setAlwaysDiscardsLateVideoFrames:NO]; //是否丢弃旧帧
+        [_videoDataOutput setAlwaysDiscardsLateVideoFrames:YES]; //是否丢弃旧帧
         [_videoDataOutput setVideoSettings:[NSDictionary dictionaryWithObject:[NSNumber numberWithInt:kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange] forKey:(id)kCVPixelBufferPixelFormatTypeKey]];
         
         [_videoDataOutput setSampleBufferDelegate:(id<AVCaptureVideoDataOutputSampleBufferDelegate>)self queue:videoQueue];
