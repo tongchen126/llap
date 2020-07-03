@@ -76,6 +76,7 @@
         if ([_assetWriter canAddInput:_assetWriterVideoInput]){
             [_assetWriter addInput:_assetWriterVideoInput];
         }
+        
         [_assetWriter startWriting];
         [self.assetWriter startSessionAtSourceTime:CMSampleBufferGetPresentationTimeStamp(sampleBuffer)];
         _firstRecord = false;
@@ -89,7 +90,23 @@
     }
 }
 - (void) stop{
-    
+    [_assetWriter finishWritingWithCompletionHandler:^{
+        AVAssetWriterStatus status = _assetWriter.status;
+        
+        if (status == AVAssetWriterStatusCompleted) {
+            
+            NSLog(@"finsished");
+            
+        }
+        
+        else
+            
+        {
+            
+            NSLog(@"failure");
+            
+        }
+    }];
 }
 - (NSString *)createVideoFilePath
 {
