@@ -59,7 +59,6 @@
                                                     AVVideoHeightKey : @(height * 2),
                                                     AVVideoScalingModeKey : AVVideoScalingModeResizeAspectFill,
                                                     AVVideoCompressionPropertiesKey : compressionProperties };
-         flag
     */
         
         
