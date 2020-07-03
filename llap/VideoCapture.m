@@ -110,11 +110,11 @@
     return self;
 }
 -(void) start{
-
     [_captureSession startRunning];
 }
 -(void) stop{
     [_captureSession stopRunning];
+    [_delegate stop];
 }
 -(void) captureOutput:(AVCaptureOutput *)output didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer fromConnection:(AVCaptureConnection *)connection{
 
