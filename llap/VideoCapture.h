@@ -21,6 +21,5 @@
 -(instancetype) init;
 -(void) start;
 -(void) stop;
-
 @end
 #endif /* VideoCapture_h */

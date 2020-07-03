@@ -8,6 +8,9 @@
 
 #ifndef VideoCaptureOutputDelegate_h
 #define VideoCaptureOutputDelegate_h
-
+#import "VideoCapture.h"
+@interface VideoCaptureOutputDelegate : NSObject <CaptureSessionDelegate>
+- (void) processVideoSampleBuffer:(CMSampleBufferRef) sampleBuffer;
+@end
 
 #endif /* VideoCaptureOutputDelegate_h */

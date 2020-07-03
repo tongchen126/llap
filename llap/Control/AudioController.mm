@@ -464,7 +464,6 @@ static OSStatus	performRender (void                         *inRefCon,
 #pragma mark-
 - (OSStatus)startIOUnit
 {
-    
     OSStatus err = AudioOutputUnitStart(_myioUnit);
     return err;
 }

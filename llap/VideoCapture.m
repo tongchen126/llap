@@ -7,8 +7,8 @@
 //
 
 #import "VideoCapture.h"
-
-@interface VideoCapture()<AVCaptureAudioDataOutputSampleBufferDelegate,CaptureSessionDelegate>
+#import "VideoCaptureOutputDelegate.h"
+@interface VideoCapture()<AVCaptureAudioDataOutputSampleBufferDelegate>
 @property (strong, nonatomic) AVCaptureDevice *inputCamera;
 @property (strong, nonatomic) AVCaptureDevice *inputMicphone;
 @property (strong, nonatomic) AVCaptureDeviceInput *videoInput;
@@ -24,12 +24,8 @@
 -(instancetype) init{
     if ((self = [super init])){
         dispatch_queue_t videoQueue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH,0);
-        AVAuthorizationStatus videoAuthStatus = [AVCaptureDevice authorizationStatusForMediaType:AVMediaTypeVideo];
-        if (videoAuthStatus != AVAuthorizationStatusAuthorized){
-            NSLog(@"Camera permission denied");
-            return nil;
-        }
-        _delegate = self;
+        _delegate = [[VideoCaptureOutputDelegate alloc] init];
+
         if (@available(iOS 11.1, *)) {
             NSArray<AVCaptureDeviceType>* deviceTypes = @[AVCaptureDeviceTypeBuiltInWideAngleCamera, AVCaptureDeviceTypeBuiltInDualCamera, AVCaptureDeviceTypeBuiltInTrueDepthCamera];
             self.videoDeviceDiscoverySession = [AVCaptureDeviceDiscoverySession discoverySessionWithDeviceTypes:deviceTypes mediaType:AVMediaTypeVideo position:AVCaptureDevicePositionUnspecified];
@@ -114,24 +110,18 @@
     return self;
 }
 -(void) start{
+
     [_captureSession startRunning];
 }
 -(void) stop{
     [_captureSession stopRunning];
 }
 -(void) captureOutput:(AVCaptureOutput *)output didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer fromConnection:(AVCaptureConnection *)connection{
+
     if (output == _videoDataOutput){
         if (_delegate && [_delegate respondsToSelector:@selector(processVideoSampleBuffer:)]){
             [_delegate processVideoSampleBuffer:sampleBuffer];
         }
     }
 }
-- (void) processVideoSampleBuffer:(CMSampleBufferRef) sampleBuffer{
-    if (!CMSampleBufferIsValid(sampleBuffer)){
-        NSLog(@"sampleBuffer not valid!");
-        return;
-    }
-    
-}
-
 @end
