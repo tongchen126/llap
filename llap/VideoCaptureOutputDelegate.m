@@ -10,6 +10,7 @@
 #import <UIKit/UIKit.h>
 #import "VideoCaptureOutputDelegate.h"
 #import "StringLogging.h"
+#import "TimeInfo.h"
 #define kScreenWidth [UIScreen mainScreen].bounds.size.width
 #define kScreenHeight [UIScreen mainScreen].bounds.size.height
 
@@ -92,7 +93,7 @@
             NSLog(@"assetWriter write failed");
         }
         else {
-            [_timeLogging writeString:@"date\n"];
+            [_timeLogging writeString:[TimeInfo getMillSecond]];
         }
     }
 }
