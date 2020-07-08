@@ -14,7 +14,7 @@
     NSDateFormatter * formatter = [[NSDateFormatter alloc ] init];
     //[formatter setDateFormat:@"YYYY.MM.dd.hh.mm.ss"];
     [formatter setDateFormat:@"YYYY-MM-dd hh:mm:ss:SSS"];
-    date = [formatter stringFromDate:[NSDate date]];
+    date = [NSString stringWithFormat:@"%@\n",[formatter stringFromDate:[NSDate date]]];
     return date;
 }
 @end
