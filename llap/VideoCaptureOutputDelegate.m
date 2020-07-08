@@ -9,6 +9,7 @@
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
 #import "VideoCaptureOutputDelegate.h"
+#import "StringLogging.h"
 #define kScreenWidth [UIScreen mainScreen].bounds.size.width
 #define kScreenHeight [UIScreen mainScreen].bounds.size.height
 
@@ -17,6 +18,7 @@
 @property (strong,nonatomic) AVAssetWriterInput *assetWriterVideoInput;
 @property (strong,nonatomic) NSURL *videoURL;
 @property BOOL firstRecord;
+@property StringLogging *timeLogging;
 @end
 @implementation VideoCaptureOutputDelegate
 - (instancetype) init{
@@ -30,6 +32,8 @@
             return nil;
         }
         _firstRecord = true;
+        _timeLogging = [[StringLogging alloc] init];
+        [_timeLogging setPath:[self getLogFilePath]];
     }
     return self;
 }
@@ -87,6 +91,9 @@
         if (!success){
             NSLog(@"assetWriter write failed");
         }
+        else {
+            [_timeLogging writeString:@"date\n"];
+        }
     }
 }
 - (void) stop{
@@ -107,6 +114,36 @@
             
         }
     }];
+}
+
+- (NSString *) storageFolderPath {
+    NSString *homePath = NSHomeDirectory();
+    NSString *documentPath = [homePath stringByAppendingPathComponent:@"/Documents"];
+    NSFileManager *fileMgr = [NSFileManager defaultManager];
+    if (YES == [fileMgr fileExistsAtPath:documentPath]){
+        
+    }
+    else
+        [fileMgr createDirectoryAtPath:documentPath withIntermediateDirectories:YES attributes:nil error:nil];
+    return documentPath;
+}
+- (NSString *)getVideoFilePath{
+    NSString *storageFolder = [self storageFolderPath];
+    NSString *videoPath = [NSString stringWithFormat:@"%@/%@", storageFolder, @"record.mp4"];
+    NSFileManager *fileMgr = [NSFileManager defaultManager];
+    if ([fileMgr fileExistsAtPath:videoPath]){
+        [fileMgr removeItemAtPath:videoPath error:nil];
+    }
+    return videoPath;
+}
+- (NSString *)getLogFilePath{
+    NSString *storageFolder = [self storageFolderPath];
+    NSString *logPath = [NSString stringWithFormat:@"%@/%@", storageFolder, @"timelog.txt"];
+    NSFileManager *fileMgr = [NSFileManager defaultManager];
+    if ([fileMgr fileExistsAtPath:logPath]){
+        [fileMgr removeItemAtPath:logPath error:nil];
+    }
+    return logPath;
 }
 - (NSString *)createVideoFilePath
 {
