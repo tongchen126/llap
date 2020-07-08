@@ -26,7 +26,7 @@
     self = [super init];
     if (self){
         NSError *error;
-        _videoURL = [NSURL fileURLWithPath:[self createVideoFilePath]];
+        _videoURL = [NSURL fileURLWithPath:[self getVideoFilePath]];
         _assetWriter = [AVAssetWriter assetWriterWithURL:_videoURL fileType:AVFileTypeQuickTimeMovie error:&error];
         if (error){
             NSLog(@"AVAssetWriter alloc failed");
@@ -121,10 +121,7 @@
     NSString *homePath = NSHomeDirectory();
     NSString *documentPath = [homePath stringByAppendingPathComponent:@"/Documents"];
     NSFileManager *fileMgr = [NSFileManager defaultManager];
-    if (YES == [fileMgr fileExistsAtPath:documentPath]){
-        
-    }
-    else
+    if (NO == [fileMgr fileExistsAtPath:documentPath])
         [fileMgr createDirectoryAtPath:documentPath withIntermediateDirectories:YES attributes:nil error:nil];
     return documentPath;
 }
@@ -146,29 +143,29 @@
     }
     return logPath;
 }
-- (NSString *)createVideoFilePath
+/*
+ - (NSString *)createVideoFilePath
+ {
+ // 创建视频文件的存储路径
+ NSString *filePath = [self createVideoFolderPath];
+ if (filePath == nil)
+ {
+ return nil;
+ }
+ 
+ NSString *videoType = @".mp4";
+ NSString *videoDestDateString = [self createFileNamePrefix];
+ NSString *videoFileName = [videoDestDateString stringByAppendingString:videoType];
+ 
+ NSUInteger idx = 1;
+ NSString *finalPath = [NSString stringWithFormat:@"%@/%@", filePath, videoFileName];
+
+while (idx % 10000 && [[NSFileManager defaultManager] fileExistsAtPath:finalPath])
 {
-    // 创建视频文件的存储路径
-    NSString *filePath = [self createVideoFolderPath];
-    if (filePath == nil)
-    {
-        return nil;
-    }
-    
-    NSString *videoType = @".mp4";
-    NSString *videoDestDateString = [self createFileNamePrefix];
-    NSString *videoFileName = [videoDestDateString stringByAppendingString:videoType];
-    
-    NSUInteger idx = 1;
-    /*We only allow 10000 same file name*/
-    NSString *finalPath = [NSString stringWithFormat:@"%@/%@", filePath, videoFileName];
-    
-    while (idx % 10000 && [[NSFileManager defaultManager] fileExistsAtPath:finalPath])
-    {
-        finalPath = [NSString stringWithFormat:@"%@/%@_(%lu)%@", filePath, videoDestDateString, (unsigned long)idx++, videoType];
-    }
-    
-    return finalPath;
+    finalPath = [NSString stringWithFormat:@"%@/%@_(%lu)%@", filePath, videoDestDateString, (unsigned long)idx++, videoType];
+}
+
+return finalPath;
 }
 
 - (NSString *)createVideoFolderPath
@@ -204,9 +201,6 @@
     return false;
 }
 
-/**
- *  创建文件名
- */
 - (NSString *)createFileNamePrefix
 {
     NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
@@ -219,4 +213,6 @@
     
     return destDateString;
 }
+ */
 @end
+
