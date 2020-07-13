@@ -13,7 +13,6 @@
 #import "TimeInfo.h"
 #define kScreenWidth [UIScreen mainScreen].bounds.size.width
 #define kScreenHeight [UIScreen mainScreen].bounds.size.height
-
 @interface VideoCaptureOutputDelegate()
 @property (strong,nonatomic) AVAssetWriter *assetWriter;
 @property (strong,nonatomic) AVAssetWriterInput *assetWriterVideoInput;
@@ -27,7 +26,9 @@
     if (self){
         NSError *error;
         _videoURL = [NSURL fileURLWithPath:[self getVideoFilePath]];
-        _assetWriter = [AVAssetWriter assetWriterWithURL:_videoURL fileType:AVFileTypeQuickTimeMovie error:&error];
+//        _assetWriter = [AVAssetWriter assetWriterWithURL:_videoURL fileType:AVFileTypeQuickTimeMovie error:&error];
+        _assetWriter = [AVAssetWriter assetWriterWithURL:_videoURL fileType:AVFileTypeMPEG4 error:&error];
+
         if (error){
             NSLog(@"AVAssetWriter alloc failed");
             return nil;
@@ -59,6 +60,7 @@
         width = kScreenHeight;
         height = kScreenWidth;
         //视频属性
+         
         NSDictionary *videoCompressionSettings = @{ AVVideoCodecKey : AVVideoCodecH264,
                                                     AVVideoWidthKey : @(width * 2),
                                                     AVVideoHeightKey : @(height * 2),
@@ -68,10 +70,15 @@
 
         */
         
+        NSDictionary *videoCompressionSettings = @{ AVVideoCodecKey : AVVideoCodecTypeHEVC,
+                                                    AVVideoWidthKey : @1920,
+                                                    AVVideoHeightKey : @1080,
+                                                    
+        };
+        _assetWriterVideoInput = [AVAssetWriterInput assetWriterInputWithMediaType:AVMediaTypeVideo outputSettings:videoCompressionSettings];
         
-        
-     //   NSDictionary *videoCompressionSettings = @{ AVVideoCodecKey : AVVideoCodecH264};
-        _assetWriterVideoInput = [AVAssetWriterInput assetWriterInputWithMediaType:AVMediaTypeVideo outputSettings:nil];
+      //  NSDictionary *videoCompressionSettings = @{ AVVideoCodecKey : AVVideoCodecH264};
+    //    _assetWriterVideoInput = [AVAssetWriterInput assetWriterInputWithMediaType:AVMediaTypeVideo outputSettings:nil];
         
         
         

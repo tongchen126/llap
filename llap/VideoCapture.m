@@ -39,7 +39,7 @@
         
         _captureSession = [[AVCaptureSession alloc] init];
         [_captureSession beginConfiguration];
-        _captureSession.sessionPreset = AVCaptureSessionPresetHigh;
+        _captureSession.sessionPreset = AVCaptureSessionPreset1920x1080;//AVCaptureSessionPresetHigh;
         
         
         
@@ -80,6 +80,8 @@
             return nil;
         }
         _inputCamera = videoDevice;
+
+        
         /*
          
          */
@@ -110,6 +112,34 @@
     return self;
 }
 -(void) start{
+    AVCaptureDevice *videoDevice = _inputCamera;
+    AVCaptureDeviceFormat *selectedFormat = nil;
+    AVFrameRateRange *selectedRange = nil;
+    for (AVCaptureDeviceFormat *format in [videoDevice formats]){
+        for (AVFrameRateRange *range in format.videoSupportedFrameRateRanges){
+            CMFormatDescriptionRef desc = format.formatDescription;
+            CMVideoDimensions dimesions = CMVideoFormatDescriptionGetDimensions(desc);
+            NSLog(@"%f:%f",range.minFrameRate,range.maxFrameRate);
+            NSLog(@"%d*%d",dimesions.width,dimesions.height);
+      /*      if (dimesions.width==1920 && dimesions.height==1080 && range.minFrameRate==6 && range.maxFrameRate==60){
+                selectedFormat = selectedFormat;
+            }
+       */
+            if (dimesions.width==1920 && dimesions.height==1080 && range.maxFrameRate==60){
+                selectedFormat = format;
+                selectedRange = range;
+                break;
+            }
+        }
+    }
+    if ([videoDevice lockForConfiguration:nil]){
+        if (selectedFormat){
+            [videoDevice setActiveFormat:selectedFormat];
+            videoDevice.activeVideoMinFrameDuration = selectedRange.minFrameDuration;
+            videoDevice.activeVideoMaxFrameDuration = selectedRange.maxFrameDuration;
+        }
+        [videoDevice unlockForConfiguration];
+    }
     [_captureSession startRunning];
 }
 -(void) stop{
