@@ -109,7 +109,12 @@
         AVAssetWriterStatus status = _assetWriter.status;
         
         if (status == AVAssetWriterStatusCompleted) {
-            
+            NSString *file = _videoURL.path;
+            if (UIVideoAtPathIsCompatibleWithSavedPhotosAlbum(file)) {
+                //保存相册核心代码
+                UISaveVideoAtPathToSavedPhotosAlbum(file, self, nil, nil);
+            }
+
             NSLog(@"finsished");
             
         }
@@ -221,5 +226,12 @@ return finalPath;
     return destDateString;
 }
  */
+- (void)video:(NSString *)videoPath didFinishSavingWithError:(NSError *)error contextInfo:(void *)contextInfo {
+    if (!error) {
+        NSLog(@"Save video to album success");
+    } else {
+        NSLog(@"Save video to album failed");
+    }
+}
 @end
 

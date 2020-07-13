@@ -26,6 +26,8 @@
 	<string></string>
     <key>NSCameraUsageDescription</key>
     <string></string>
+    <key>NSPhotoLibraryAddUsageDescription</key>
+    <string></string>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
 	<key>UIMainStoryboardFile</key>
