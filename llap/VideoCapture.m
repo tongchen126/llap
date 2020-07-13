@@ -18,6 +18,7 @@
 @property (strong, nonatomic) AVCaptureVideoPreviewLayer *videoPreviewLayer;
 @property (strong, nonatomic) AVCaptureSessionPreset capturePresent;
 @property (strong,nonatomic) AVCaptureDeviceDiscoverySession *videoDeviceDiscoverySession;
+@property BOOL running;
 @end
 
 @implementation VideoCapture
@@ -108,6 +109,7 @@
         }
         connection.videoScaleAndCropFactor = connection.videoMaxScaleAndCropFactor;
         [_captureSession commitConfiguration];
+        _running = false;
     }
     return self;
 }
@@ -135,16 +137,20 @@
     if ([videoDevice lockForConfiguration:nil]){
         if (selectedFormat){
             [videoDevice setActiveFormat:selectedFormat];
-            videoDevice.activeVideoMinFrameDuration = selectedRange.minFrameDuration;
-            videoDevice.activeVideoMaxFrameDuration = selectedRange.maxFrameDuration;
+            videoDevice.activeVideoMinFrameDuration = CMTimeMake(1, 60);//selectedRange.minFrameDuration;
+            videoDevice.activeVideoMaxFrameDuration = CMTimeMake(1, 60);//selectedRange.maxFrameDuration;
         }
         [videoDevice unlockForConfiguration];
     }
     [_captureSession startRunning];
+    _running = true;
 }
 -(void) stop{
-    [_captureSession stopRunning];
-    [_delegate stop];
+    if (_running){
+        [_captureSession stopRunning];
+        [_delegate stop];
+        _running = false;
+    }
 }
 -(void) captureOutput:(AVCaptureOutput *)output didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer fromConnection:(AVCaptureConnection *)connection{
 

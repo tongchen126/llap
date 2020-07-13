@@ -28,8 +28,7 @@
     [super viewDidLoad];
     _reslut = @"";
     // Do any additional setup after loading the view, typically from a nib.
-    audioController = [[AudioController alloc] init];
-    videoCapture = [[VideoCapture alloc] init];
+    
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(performDisUpdate:) name:@"AudioDisUpdate" object:nil];
     [_slider setValue: 0.0];
     [self.view addSubview: _slider];
@@ -50,13 +49,29 @@
     }
 }
 - (IBAction)playbutton:(UIButton *)sender {
+    if (audioController){
+        [audioController stopIOUnit];
+        audioController = nil;
+    }
+    audioController = [[AudioController alloc] init];
+    if (videoCapture){
+        [videoCapture stop];
+        videoCapture = nil;
+    }
+    videoCapture = [[VideoCapture alloc] init];
     audioController.audiodistance=0;
     [audioController startIOUnit];
     [videoCapture start];
 }
 - (IBAction)stopbutton:(UIButton *)sender {
-    [audioController stopIOUnit];
-    [videoCapture stop];
+    if (videoCapture){
+        [videoCapture stop];
+        videoCapture = nil;
+    }
+    if (audioController){
+        [audioController stopIOUnit];
+        audioController = nil;
+    }
 }
 
 - (void)didReceiveMemoryWarning {
@@ -66,16 +81,17 @@
 
 - (void)performDisUpdate:(NSNotification *)notification
 {
-    dispatch_async(dispatch_get_main_queue(), ^{
-    
-    int tempdis=(int) audioController.audiodistance/DISPLAY_SCALE;
+    if (audioController){
+        dispatch_async(dispatch_get_main_queue(), ^{
+            
+            int tempdis=(int) audioController.audiodistance/DISPLAY_SCALE;
         
-     _slider.value=(audioController.audiodistance-DISPLAY_SCALE*tempdis)/DISPLAY_SCALE;
+            _slider.value=(audioController.audiodistance-DISPLAY_SCALE*tempdis)/DISPLAY_SCALE;
         
-        NSLog(@"********%lf",audioController.audiodistance);
-        [self saveContentWithDistance:[NSString stringWithFormat:@"%lf",audioController.distanceChange]];
+            NSLog(@"********%lf",audioController.audiodistance);
+            [self saveContentWithDistance:[NSString stringWithFormat:@"%lf",audioController.distanceChange]];
+        });
     }
-        );
 
 }
 
