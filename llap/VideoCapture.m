@@ -27,30 +27,19 @@
         dispatch_queue_t videoQueue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_HIGH,0);
         _delegate = [[VideoCaptureOutputDelegate alloc] init];
 
-        if (@available(iOS 11.1, *)) {
-            NSArray<AVCaptureDeviceType>* deviceTypes = @[AVCaptureDeviceTypeBuiltInWideAngleCamera, AVCaptureDeviceTypeBuiltInDualCamera, AVCaptureDeviceTypeBuiltInTrueDepthCamera];
-            self.videoDeviceDiscoverySession = [AVCaptureDeviceDiscoverySession discoverySessionWithDeviceTypes:deviceTypes mediaType:AVMediaTypeVideo position:AVCaptureDevicePositionUnspecified];
-        } else {
-            // Fallback on earlier versions
-            NSArray<AVCaptureDeviceType>* deviceTypes = @[AVCaptureDeviceTypeBuiltInWideAngleCamera, AVCaptureDeviceTypeBuiltInDualCamera];
-            self.videoDeviceDiscoverySession = [AVCaptureDeviceDiscoverySession discoverySessionWithDeviceTypes:deviceTypes mediaType:AVMediaTypeVideo position:AVCaptureDevicePositionUnspecified];
-        }
-        
-        
         
         _captureSession = [[AVCaptureSession alloc] init];
         [_captureSession beginConfiguration];
-        _captureSession.sessionPreset = AVCaptureSessionPreset1920x1080;//AVCaptureSessionPresetHigh;
+        _captureSession.sessionPreset = AVCaptureSessionPresetHigh;
         
         
         
         AVCaptureDevice* videoDevice = nil;
         
         // First, look for a device with both the preferred position and device type.
-        /*
         NSArray<AVCaptureDevice* >* devices = _videoDeviceDiscoverySession.devices;
         for (AVCaptureDevice* device in devices) {
-            if (device.position == AVCaptureDevicePositionBack && [device.deviceType isEqualToString:AVCaptureDeviceTypeBuiltInDualCamera]) {
+            if (device.position == AVCaptureDevicePositionFront) {
                 videoDevice = device;
                 break;
             }
@@ -65,8 +54,7 @@
                 }
             }
         }
-        */
-        videoDevice = [AVCaptureDevice defaultDeviceWithDeviceType:AVCaptureDeviceTypeBuiltInDualCamera mediaType:AVMediaTypeVideo position:AVCaptureDevicePositionBack];
+      //  videoDevice = [AVCaptureDevice defaultDeviceWithDeviceType:AVCaptureDeviceTypeCam mediaType:AVMediaTypeVideo position:AVCaptureDevicePositionFront];
         if (!videoDevice) {
             // If a rear dual camera is not available, default to the rear wide angle camera.
             videoDevice = [AVCaptureDevice defaultDeviceWithDeviceType:AVCaptureDeviceTypeBuiltInWideAngleCamera mediaType:AVMediaTypeVideo position:AVCaptureDevicePositionBack];
@@ -97,23 +85,26 @@
         }
         _videoDataOutput = [[AVCaptureVideoDataOutput alloc] init];
         [_videoDataOutput setAlwaysDiscardsLateVideoFrames:YES]; //是否丢弃旧帧
-        [_videoDataOutput setVideoSettings:[NSDictionary dictionaryWithObject:[NSNumber numberWithInt:kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange] forKey:(id)kCVPixelBufferPixelFormatTypeKey]];
-        
+   /*     [_videoDataOutput setVideoSettings:[NSDictionary dictionaryWithObject:[NSNumber numberWithInt:kCVPixelFormatType_420YpCbCr8BiPlanarVideoRange] forKey:(id)kCVPixelBufferPixelFormatTypeKey]];
+     */
         [_videoDataOutput setSampleBufferDelegate:(id<AVCaptureVideoDataOutputSampleBufferDelegate>)self queue:videoQueue];
         if ([_captureSession canAddOutput:_videoDataOutput]){
             [_captureSession addOutput:_videoDataOutput];
         }
-        AVCaptureConnection *connection = [_videoDataOutput connectionWithMediaType:AVMediaTypeVideo];
-        if ([connection isVideoStabilizationSupported]){
+      //  AVCaptureConnection *connection = [_videoDataOutput connectionWithMediaType:AVMediaTypeVideo];
+        /*if ([connection isVideoStabilizationSupported]){
             connection.preferredVideoStabilizationMode = AVCaptureVideoStabilizationModeAuto;
         }
-        connection.videoScaleAndCropFactor = connection.videoMaxScaleAndCropFactor;
+        */
+  //      connection.videoScaleAndCropFactor = connection.videoMaxScaleAndCropFactor;
         [_captureSession commitConfiguration];
+        _videoPreviewLayer = [[AVCaptureVideoPreviewLayer alloc] initWithSession:_captureSession];
         _running = false;
     }
     return self;
 }
 -(void) start{
+    /*
     AVCaptureDevice *videoDevice = _inputCamera;
     AVCaptureDeviceFormat *selectedFormat = nil;
     AVFrameRateRange *selectedRange = nil;
@@ -123,11 +114,7 @@
             CMVideoDimensions dimesions = CMVideoFormatDescriptionGetDimensions(desc);
             NSLog(@"%f:%f",range.minFrameRate,range.maxFrameRate);
             NSLog(@"%d*%d",dimesions.width,dimesions.height);
-      /*      if (dimesions.width==1920 && dimesions.height==1080 && range.minFrameRate==6 && range.maxFrameRate==60){
-                selectedFormat = selectedFormat;
-            }
-       */
-            if (dimesions.width==1920 && dimesions.height==1080 && range.maxFrameRate==60){
+            if (dimesions.width==1920 && dimesions.height==1080 && range.maxFrameRate==30){
                 selectedFormat = format;
                 selectedRange = range;
                 break;
@@ -135,13 +122,29 @@
         }
     }
     if ([videoDevice lockForConfiguration:nil]){
-        if (selectedFormat){
+       if (selectedFormat){
             [videoDevice setActiveFormat:selectedFormat];
-            videoDevice.activeVideoMinFrameDuration = CMTimeMake(1, 60);//selectedRange.minFrameDuration;
-            videoDevice.activeVideoMaxFrameDuration = CMTimeMake(1, 60);//selectedRange.maxFrameDuration;
+            //videoDevice.activeVideoMinFrameDuration = CMTimeMake(1, 60);//selectedRange.minFrameDuration;
+          //  videoDevice.activeVideoMaxFrameDuration = CMTimeMake(1, 60);//selectedRange.maxFrameDuration;
+        }
+        CGPoint point = CGPointMake(0.5, 0.5);
+        if ([videoDevice isFocusModeSupported:AVCaptureFocusModeContinuousAutoFocus]){
+            [videoDevice setFocusMode:AVCaptureFocusModeContinuousAutoFocus];
+        }
+        if ([videoDevice isFocusPointOfInterestSupported])
+        {
+            [videoDevice setFocusPointOfInterest:point];
+        }
+        if ([videoDevice isExposureModeSupported:AVCaptureExposureModeContinuousAutoExposure]){
+            [videoDevice setExposureMode:AVCaptureExposureModeContinuousAutoExposure];
+        }
+        if ([videoDevice isExposurePointOfInterestSupported])
+        {
+            [videoDevice setExposurePointOfInterest:point];
         }
         [videoDevice unlockForConfiguration];
     }
+    */
     [_captureSession startRunning];
     _running = true;
 }

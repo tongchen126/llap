@@ -19,6 +19,7 @@
 		2A02640D24ADF3F00076F694 /* VideoCaptureOutputDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 2A02640C24ADF3F00076F694 /* VideoCaptureOutputDelegate.m */; };
 		2A08F1D624B57C41007264E1 /* StringLogging.m in Sources */ = {isa = PBXBuildFile; fileRef = 2A08F1D524B57C41007264E1 /* StringLogging.m */; };
 		2A08F1D924B58DA9007264E1 /* TimeInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = 2A08F1D824B58DA9007264E1 /* TimeInfo.m */; };
+		2A2304F524BD8500007E0216 /* VideoCaptureV2.m in Sources */ = {isa = PBXBuildFile; fileRef = 2A2304F424BD8500007E0216 /* VideoCaptureV2.m */; };
 		2A8C6EFF24ACC808008A2905 /* VideoCapture.m in Sources */ = {isa = PBXBuildFile; fileRef = 2A8C6EFE24ACC808008A2905 /* VideoCapture.m */; };
 		E1854A7F1ECDD02C00860993 /* AudioController.mm in Sources */ = {isa = PBXBuildFile; fileRef = E1854A7C1ECDD02C00860993 /* AudioController.mm */; };
 		E1854A801ECDD02C00860993 /* RangeFinder.cpp in Sources */ = {isa = PBXBuildFile; fileRef = E1854A7D1ECDD02C00860993 /* RangeFinder.cpp */; };
@@ -48,6 +49,8 @@
 		2A08F1D524B57C41007264E1 /* StringLogging.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = StringLogging.m; sourceTree = "<group>"; };
 		2A08F1D724B58D68007264E1 /* TimeInfo.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TimeInfo.h; sourceTree = "<group>"; };
 		2A08F1D824B58DA9007264E1 /* TimeInfo.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TimeInfo.m; sourceTree = "<group>"; };
+		2A2304F324BD84AE007E0216 /* VideoCaptureV2.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = VideoCaptureV2.h; sourceTree = "<group>"; };
+		2A2304F424BD8500007E0216 /* VideoCaptureV2.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = VideoCaptureV2.m; sourceTree = "<group>"; };
 		2A8C6EFE24ACC808008A2905 /* VideoCapture.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = VideoCapture.m; sourceTree = "<group>"; };
 		2ABD59B424ACC61F004913ED /* VideoCapture.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = VideoCapture.h; sourceTree = "<group>"; };
 		E1854A7B1ECDD02C00860993 /* AudioController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AudioController.h; path = Control/AudioController.h; sourceTree = "<group>"; };
@@ -139,6 +142,8 @@
 				2A08F1D524B57C41007264E1 /* StringLogging.m */,
 				2A08F1D724B58D68007264E1 /* TimeInfo.h */,
 				2A08F1D824B58DA9007264E1 /* TimeInfo.m */,
+				2A2304F324BD84AE007E0216 /* VideoCaptureV2.h */,
+				2A2304F424BD8500007E0216 /* VideoCaptureV2.m */,
 			);
 			name = Control;
 			sourceTree = "<group>";
@@ -225,6 +230,7 @@
 				2A8C6EFF24ACC808008A2905 /* VideoCapture.m in Sources */,
 				E1854A7F1ECDD02C00860993 /* AudioController.mm in Sources */,
 				267CEFFE1C75E7330053593B /* CAStreamBasicDescription.cpp in Sources */,
+				2A2304F524BD8500007E0216 /* VideoCaptureV2.m in Sources */,
 				E1854A801ECDD02C00860993 /* RangeFinder.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

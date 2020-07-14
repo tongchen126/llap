@@ -13,12 +13,14 @@
 #import "TimeInfo.h"
 #define kScreenWidth [UIScreen mainScreen].bounds.size.width
 #define kScreenHeight [UIScreen mainScreen].bounds.size.height
+#define DISCARD_FRAME_COUNT 60
 @interface VideoCaptureOutputDelegate()
 @property (strong,nonatomic) AVAssetWriter *assetWriter;
 @property (strong,nonatomic) AVAssetWriterInput *assetWriterVideoInput;
 @property (strong,nonatomic) NSURL *videoURL;
 @property BOOL firstRecord;
 @property StringLogging *timeLogging;
+@property int frameCount;
 @end
 @implementation VideoCaptureOutputDelegate
 - (instancetype) init{
@@ -36,6 +38,7 @@
         _firstRecord = true;
         _timeLogging = [[StringLogging alloc] init];
         [_timeLogging setPath:[self getLogFilePath]];
+        _frameCount = 0;
     }
     return self;
 }
@@ -44,7 +47,6 @@
         /*
         CMVideoFormatDescriptionRef desc = CMSampleBufferGetFormatDescription(sampleBuffer);
         CMVideoDimensions dim = CMVideoFormatDescriptionGetDimensions(desc);
-        int width = dim.width, height = dim.height;
         NSInteger numPixels = kScreenWidth * kScreenHeight;
         
         
@@ -57,24 +59,27 @@
                                                  AVVideoExpectedSourceFrameRateKey : @(15),
                                                  AVVideoMaxKeyFrameIntervalKey : @(15),
                                                  AVVideoProfileLevelKey : AVVideoProfileLevelH264BaselineAutoLevel };
-        width = kScreenHeight;
-        height = kScreenWidth;
+        int width = kScreenHeight;
+        int height = kScreenWidth;
         //视频属性
-         
-        NSDictionary *videoCompressionSettings = @{ AVVideoCodecKey : AVVideoCodecH264,
-                                                    AVVideoWidthKey : @(width * 2),
-                                                    AVVideoHeightKey : @(height * 2),
-                                                    AVVideoScalingModeKey : AVVideoScalingModeResizeAspectFill,
-                                                    AVVideoCompressionPropertiesKey : compressionProperties };
-        _assetWriterVideoInput = [AVAssetWriterInput assetWriterInputWithMediaType:AVMediaTypeVideo outputSettings:videoCompressionSettings];
-
-        */
-        
-        NSDictionary *videoCompressionSettings = @{ AVVideoCodecKey : AVVideoCodecTypeHEVC,
+         */
+        NSDictionary *videoCompressionSettings = @{ AVVideoCodecKey : AVVideoCodecTypeH264,
                                                     AVVideoWidthKey : @1920,
                                                     AVVideoHeightKey : @1080,
+                                                    AVVideoScalingModeKey : AVVideoScalingModeResizeAspectFill,
                                                     
         };
+        _assetWriterVideoInput = [AVAssetWriterInput assetWriterInputWithMediaType:AVMediaTypeVideo outputSettings:videoCompressionSettings];
+
+        
+        
+     /*  NSDictionary *videoCompressionSettings = @{ AVVideoCodecKey : AVVideoCodecTypeHEVC,
+                                                    AVVideoWidthKey : @1366,
+                                                    AVVideoHeightKey : @768,
+                                                     AVVideoScalingModeKey : AVVideoScalingModeResizeAspectFill,
+                                                    
+        };
+      */
         _assetWriterVideoInput = [AVAssetWriterInput assetWriterInputWithMediaType:AVMediaTypeVideo outputSettings:videoCompressionSettings];
         
       //  NSDictionary *videoCompressionSettings = @{ AVVideoCodecKey : AVVideoCodecH264};
@@ -90,11 +95,13 @@
         }
         
         [_assetWriter startWriting];
-        [self.assetWriter startSessionAtSourceTime:CMSampleBufferGetPresentationTimeStamp(sampleBuffer)];
         _firstRecord = false;
         
     }
-    if ([_assetWriterVideoInput isReadyForMoreMediaData]){
+    _frameCount += 1;
+    if (_frameCount == DISCARD_FRAME_COUNT)
+        [self.assetWriter startSessionAtSourceTime:CMSampleBufferGetPresentationTimeStamp(sampleBuffer)];
+    if (_frameCount >= DISCARD_FRAME_COUNT && [_assetWriterVideoInput isReadyForMoreMediaData]){
         BOOL success = [_assetWriterVideoInput appendSampleBuffer:sampleBuffer];
         if (!success){
             NSLog(@"assetWriter write failed");

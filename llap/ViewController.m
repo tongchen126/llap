@@ -9,11 +9,11 @@
 #import "ViewController.h"
 #import "AudioController.h"
 #import "AppDelegate.h"
-#import "VideoCapture.h"
+#import "VideoCaptureV2.h"
 
 @interface ViewController (){
     AudioController *audioController;
-    VideoCapture *videoCapture;
+    VideoCaptureV2 *videoCapture;
     NSString *_reslut;
     BOOL _isTakeTime;
     NSInteger _timeIndex; //计数器
@@ -48,6 +48,7 @@
         _isTakeTime = NO;
     }
 }
+/*
 - (IBAction)playbutton:(UIButton *)sender {
     if (audioController){
         [audioController stopIOUnit];
@@ -70,7 +71,29 @@
     }
     if (audioController){
         [audioController stopIOUnit];
+    }
+}
+*/
+
+- (IBAction)playbutton:(UIButton *)sender {
+    if (audioController){
+        [audioController stopIOUnit];
         audioController = nil;
+    }
+    audioController = [[AudioController alloc] init];
+    
+    videoCapture = [[VideoCaptureV2 alloc] init];
+    audioController.audiodistance=0;
+    [audioController startIOUnit];
+    [videoCapture start];
+}
+- (IBAction)stopbutton:(UIButton *)sender {
+    if (videoCapture){
+        [videoCapture stop];
+        videoCapture = nil;
+    }
+    if (audioController){
+        [audioController stopIOUnit];
     }
 }
 
