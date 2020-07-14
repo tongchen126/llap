@@ -10,7 +10,7 @@
 #define VideoCaptureV2_h
 
 @interface VideoCaptureV2 : NSObject
--(void) start;
+-(void) start:(NSString *)str;
 -(void) stop;
 @end
 #endif /* VideoCaptureV2_h */

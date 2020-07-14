@@ -17,4 +17,20 @@
     date = [NSString stringWithFormat:@"%@\n",[formatter stringFromDate:[NSDate date]]];
     return date;
 }
++(NSString *)getSecond{
+    NSString* date;
+    NSDateFormatter * formatter = [[NSDateFormatter alloc ] init];
+    //[formatter setDateFormat:@"YYYY.MM.dd.hh.mm.ss"];
+    [formatter setDateFormat:@"YYYY-MM-dd hh:mm:ss"];
+    date = [NSString stringWithFormat:@"%@",[formatter stringFromDate:[NSDate date]]];
+    return date;
+}
++(NSString *) getMillSecondNoEnd{
+    NSString* date;
+    NSDateFormatter * formatter = [[NSDateFormatter alloc ] init];
+    //[formatter setDateFormat:@"YYYY.MM.dd.hh.mm.ss"];
+    [formatter setDateFormat:@"YYYY-MM-dd hh:mm:ss:SSS"];
+    date = [NSString stringWithFormat:@"%@",[formatter stringFromDate:[NSDate date]]];
+    return date;
+}
 @end

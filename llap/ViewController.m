@@ -10,13 +10,15 @@
 #import "AudioController.h"
 #import "AppDelegate.h"
 #import "VideoCaptureV2.h"
-
+#import "StringLogging.h"
+#import "TimeInfo.h"
 @interface ViewController (){
     AudioController *audioController;
     VideoCaptureV2 *videoCapture;
     NSString *_reslut;
     BOOL _isTakeTime;
     NSInteger _timeIndex; //计数器
+    StringLogging *strLogging;
 }
 
 @property (weak, nonatomic) IBOutlet UISlider *slider;
@@ -76,6 +78,7 @@
 */
 
 - (IBAction)playbutton:(UIButton *)sender {
+    strLogging = [[StringLogging alloc] init];
     if (audioController){
         [audioController stopIOUnit];
         audioController = nil;
@@ -85,7 +88,9 @@
     videoCapture = [[VideoCaptureV2 alloc] init];
     audioController.audiodistance=0;
     [audioController startIOUnit];
-    [videoCapture start];
+    NSString *str = [TimeInfo getSecond];
+    [strLogging setPath:[self getLogFilePath:str]];
+    [videoCapture start:str];
 }
 - (IBAction)stopbutton:(UIButton *)sender {
     if (videoCapture){
@@ -94,7 +99,10 @@
     }
     if (audioController){
         [audioController stopIOUnit];
+        audioController = nil;
     }
+    [strLogging close];
+    strLogging = nil;
 }
 
 - (void)didReceiveMemoryWarning {
@@ -112,7 +120,8 @@
             _slider.value=(audioController.audiodistance-DISPLAY_SCALE*tempdis)/DISPLAY_SCALE;
         
             NSLog(@"********%lf",audioController.audiodistance);
-            [self saveContentWithDistance:[NSString stringWithFormat:@"%lf",audioController.distanceChange]];
+            [strLogging writeString:[NSString stringWithFormat:@"%@,%lf\n",[TimeInfo getMillSecondNoEnd],audioController.distanceChange]];
+        //    [self saveContentWithDistance:[NSString stringWithFormat:@"%lf",audioController.distanceChange]];
         });
     }
 
@@ -132,7 +141,8 @@
         _isTakeTime = false;
         _reslut = [_reslut stringByAppendingString:[NSString stringWithFormat:@"\n时间戳：%@\n",[self getNowTimeTimestamp]]];
     }
-       
+    if (strLogging)
+        [strLogging writeString:_reslut];
     [_reslut writeToFile:delegate.path atomically:YES encoding:NSUTF8StringEncoding error:&error];
 
           if (error) {
@@ -157,5 +167,22 @@
 
     return nowDateString;
 
+}
+- (NSString *)getLogFilePath:(NSString *)str {
+    NSString *storageFolder = [self storageFolderPath];
+    NSString *logPath = [NSString stringWithFormat:@"%@/dlog-%@.txt", storageFolder, str];
+    NSFileManager *fileMgr = [NSFileManager defaultManager];
+    if ([fileMgr fileExistsAtPath:logPath]){
+        [fileMgr removeItemAtPath:logPath error:nil];
+    }
+    return logPath;
+}
+- (NSString *) storageFolderPath {
+    NSString *homePath = NSHomeDirectory();
+    NSString *documentPath = [homePath stringByAppendingPathComponent:@"/Documents"];
+    NSFileManager *fileMgr = [NSFileManager defaultManager];
+    if (NO == [fileMgr fileExistsAtPath:documentPath])
+        [fileMgr createDirectoryAtPath:documentPath withIntermediateDirectories:YES attributes:nil error:nil];
+    return documentPath;
 }
 @end

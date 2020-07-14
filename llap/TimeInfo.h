@@ -11,5 +11,7 @@
 #import <Foundation/Foundation.h>
 @interface TimeInfo :NSObject
 +(NSString *) getMillSecond;
++(NSString *) getSecond;
++(NSString *) getMillSecondNoEnd;
 @end
 #endif /* TimeInfo_h */

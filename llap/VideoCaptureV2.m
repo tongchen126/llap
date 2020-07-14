@@ -32,6 +32,7 @@ typedef void(^PropertyChangeBlock)(AVCaptureDevice *captureDevice);
 @property BOOL writerinited;
 @property int frames;
 @property StringLogging *timeLogging;
+@property NSString *videoPathtmp;
 @end
 @implementation VideoCaptureV2
 - (AVCaptureSession *)captureSession
@@ -203,6 +204,7 @@ typedef void(^PropertyChangeBlock)(AVCaptureDevice *captureDevice);
             [_assetWriter addInput:_assetWriterVideoInput];
         }
     _timeLogging = [[StringLogging alloc] init];
+    [_timeLogging setPath:[self getLogFilePath]];
     _writerinited = TRUE;
 }
 -(instancetype) init{
@@ -211,11 +213,12 @@ typedef void(^PropertyChangeBlock)(AVCaptureDevice *captureDevice);
         [self setup];
     return self;
 }
--(void) start{
+-(void) start:(NSString *)str{
     _recording = TRUE;
     _canWrite = FALSE;
     _writerinited = FALSE;
     _frames = 0;
+    _videoPathtmp = [NSString stringWithFormat:@"%@" ,str];
     dispatch_async(dispatch_get_main_queue(), ^{
         [self setupWriter];
     });
@@ -248,7 +251,7 @@ typedef void(^PropertyChangeBlock)(AVCaptureDevice *captureDevice);
 }
 - (NSString *)getLogFilePath{
     NSString *storageFolder = [self storageFolderPath];
-    NSString *logPath = [NSString stringWithFormat:@"%@/%@", storageFolder, @"timelog.txt"];
+    NSString *logPath = [NSString stringWithFormat:@"%@/vlog-%@.txt", storageFolder, _videoPathtmp];
     NSFileManager *fileMgr = [NSFileManager defaultManager];
     if ([fileMgr fileExistsAtPath:logPath]){
         [fileMgr removeItemAtPath:logPath error:nil];
@@ -257,7 +260,7 @@ typedef void(^PropertyChangeBlock)(AVCaptureDevice *captureDevice);
 }
 - (NSString *)getVideoFilePath{
     NSString *storageFolder = [self storageFolderPath];
-    NSString *videoPath = [NSString stringWithFormat:@"%@/%@", storageFolder, @"record.mp4"];
+    NSString *videoPath = [NSString stringWithFormat:@"%@/v-%@.mp4", storageFolder, _videoPathtmp];
     NSFileManager *fileMgr = [NSFileManager defaultManager];
     if ([fileMgr fileExistsAtPath:videoPath]){
         [fileMgr removeItemAtPath:videoPath error:nil];
