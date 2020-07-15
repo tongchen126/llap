@@ -15,7 +15,7 @@
 typedef void(^PropertyChangeBlock)(AVCaptureDevice *captureDevice);
 #define kScreenWidth [UIScreen mainScreen].bounds.size.width
 #define kScreenHeight [UIScreen mainScreen].bounds.size.height
-#define DISCARD_FRAMES_NUM 60
+#define DISCARD_FRAMES_NUM 90
 @interface VideoCaptureV2() <AVCaptureVideoDataOutputSampleBufferDelegate>
 @property (nonatomic, strong) dispatch_queue_t videoQueue;
 @property (nonatomic, strong) AVCaptureSession *captureSession;
@@ -91,6 +91,7 @@ typedef void(^PropertyChangeBlock)(AVCaptureDevice *captureDevice);
                  selectedFormat = selectedFormat;
              }
         */
+            /*
              if (dimesions.width==1920 && dimesions.height==1080 && range.maxFrameRate==60){
                  selectedFormat = format;
                  selectedRange = range;
@@ -99,6 +100,8 @@ typedef void(^PropertyChangeBlock)(AVCaptureDevice *captureDevice);
          }
          if (selectedRange)
              break;
+        */
+         }
      }
     [self changeDeviceProperty:^(AVCaptureDevice *videoDevice){
         if (selectedFormat){
@@ -165,7 +168,7 @@ typedef void(^PropertyChangeBlock)(AVCaptureDevice *captureDevice);
     _videoURL = [NSURL fileURLWithPath:[self getVideoFilePath]];
     self.assetWriter = [AVAssetWriter assetWriterWithURL:_videoURL fileType:AVFileTypeMPEG4 error:nil];
        //写入视频大小
-    /*
+       /*
        NSInteger numPixels = kScreenWidth * kScreenHeight;
        
        //每像素比特
@@ -188,7 +191,7 @@ typedef void(^PropertyChangeBlock)(AVCaptureDevice *captureDevice);
                                           AVVideoCompressionPropertiesKey : compressionProperties };
   */
  
-        self.videoCompressionSettings = @{ AVVideoCodecKey : AVVideoCodecTypeH264,
+        self.videoCompressionSettings = @{ AVVideoCodecKey : AVVideoCodecTypeHEVC,
                                                  AVVideoWidthKey : @1920,
                                                  AVVideoHeightKey : @1080,
                                                  AVVideoScalingModeKey : AVVideoScalingModeResizeAspectFill,

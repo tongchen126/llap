@@ -10,6 +10,7 @@
 #import "StringLogging.h"
 @interface StringLogging()
 @property NSFileHandle *fileHandler;
+@property BOOL closed;
 @end
 @implementation StringLogging
 -(void) setPath:(NSString *)filePath{
@@ -23,10 +24,11 @@
     }
     [fileManager createFileAtPath:filePath contents:nil attributes:nil];
     _fileHandler = [NSFileHandle fileHandleForWritingAtPath:filePath];
+    _closed = FALSE;
 }
 -(BOOL) writeString: (NSString *)_data{
     NSData *data = [_data dataUsingEncoding:NSUTF8StringEncoding];
-    if (_fileHandler){
+    if (_closed == FALSE && _fileHandler){
         [_fileHandler seekToEndOfFile];
         [_fileHandler writeData:data];
         return TRUE;
@@ -34,7 +36,10 @@
     return FALSE;
 }
 -(void) close{
-    if (_fileHandler)
+    if (_fileHandler){
+        _closed = TRUE;
         [_fileHandler closeFile];
+    }
+    _fileHandler = nil;
 }
 @end

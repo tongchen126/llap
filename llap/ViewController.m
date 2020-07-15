@@ -78,19 +78,26 @@
 */
 
 - (IBAction)playbutton:(UIButton *)sender {
+    NSString *str = [TimeInfo getSecond];
+    if (strLogging){
+        [strLogging close];
+        strLogging = nil;
+    }
     strLogging = [[StringLogging alloc] init];
     if (audioController){
         [audioController stopIOUnit];
         audioController = nil;
     }
     audioController = [[AudioController alloc] init];
-    
-    videoCapture = [[VideoCaptureV2 alloc] init];
     audioController.audiodistance=0;
+    if (videoCapture){
+        [videoCapture stop];
+        videoCapture = nil;
+    }
+    videoCapture = [[VideoCaptureV2 alloc] init];
     [audioController startIOUnit];
-    NSString *str = [TimeInfo getSecond];
-    [strLogging setPath:[self getLogFilePath:str]];
     [videoCapture start:str];
+    [strLogging setPath:[self getLogFilePath:str]];
 }
 - (IBAction)stopbutton:(UIButton *)sender {
     if (videoCapture){
@@ -101,8 +108,10 @@
         [audioController stopIOUnit];
         audioController = nil;
     }
-    [strLogging close];
-    strLogging = nil;
+    if (strLogging){
+        [strLogging close];
+        strLogging = nil;
+    }
 }
 
 - (void)didReceiveMemoryWarning {
@@ -126,7 +135,7 @@
     }
 
 }
-
+/*
 - (void)saveContentWithDistance:(NSString *)distance{
     
      AppDelegate *delegate = (AppDelegate *)[UIApplication sharedApplication].delegate;
@@ -168,6 +177,7 @@
     return nowDateString;
 
 }
+ */
 - (NSString *)getLogFilePath:(NSString *)str {
     NSString *storageFolder = [self storageFolderPath];
     NSString *logPath = [NSString stringWithFormat:@"%@/dlog-%@.txt", storageFolder, str];
